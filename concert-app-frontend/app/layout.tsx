@@ -1,4 +1,9 @@
-import type { Metadata } from "next";
+"use client";
+
+import Link from "next/link";
+
+import { redirect } from "next/navigation";
+import { useState } from "react";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import {
@@ -20,16 +25,19 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "Concert App",
-  description: "Concert booking application",
-};
-
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const [role, setRole] = useState("admin");
+  const toggleRole = () => {
+    const newRole = role === "admin" ? "user" : "admin";
+
+    setRole(newRole);
+
+    newRole === "admin" ? redirect("/admin/home/overview") : redirect("/user");
+  };
   return (
     <html lang="en">
       <body className="min-h-screen bg-gray-100 antialiased">
@@ -38,16 +46,32 @@ export default function RootLayout({
           {/* Sidebar */}
           <aside className="w-64 bg-white border-r border-gray-100  p-6 flex flex-col justify-between">
             <div>
-              <h2 className="text-2xl font-bold mb-8">Admin</h2>
+              <h2 className="text-2xl font-bold mb-8">
+                {role === "admin" ? "Admin" : "User"}
+              </h2>
               <nav className="space-y-4">
-                <button className="flex items-center space-x-3 text-blue-600 font-medium">
-                  <FaHome /> <span>Home</span>
-                </button>
-                <button className="flex items-center space-x-3 text-gray-600 hover:text-blue-600">
-                  <FaHistory /> <span>History</span>
-                </button>
-                <button className="flex items-center space-x-3 text-gray-600 hover:text-blue-600">
-                  <FaUserAlt /> <span>Switch to user</span>
+                <Link href={role === "admin" ? "/admin/home" : "/user"}>
+                  <button className="flex items-center space-x-3 text-blue-600 font-medium">
+                    <FaHome /> <span>Home</span>
+                  </button>
+                </Link>
+
+                <Link href="/admin/history">
+                  <button className="flex items-center space-x-3 text-gray-600 hover:text-blue-600">
+                    <FaHistory /> <span>History</span>
+                  </button>
+                </Link>
+
+                <button
+                  className="flex items-center space-x-3 text-gray-600 hover:text-blue-600"
+                  onClick={toggleRole}
+                >
+                  <FaUserAlt />{" "}
+                  <span>
+                    {role === "admin"
+                      ? "Switch to User"
+                      : "Switch to Admin"}{" "}
+                  </span>
                 </button>
               </nav>
             </div>

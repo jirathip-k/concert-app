@@ -42,12 +42,17 @@ export class ReservationService {
     if (!user) throw new BadRequestException('User not found');
 
     if (existing) {
-      // If reservation exists and we're trying to cancel, set the action to CANCELED
+      // If reservation exists:
       if (action === ReservationAction.CANCELED) {
+        // If action is "CANCELED", set the action to CANCELED
         existing.action = ReservationAction.CANCELED;
         return this.resRepo.save(existing);
+      } else if (existing.action === ReservationAction.CANCELED) {
+        // If the existing reservation is "CANCELED", allow the user to reserve again
+        existing.action = ReservationAction.RESERVED;
+        return this.resRepo.save(existing);
       } else {
-        // If reservation exists and we're trying to reserve again, return an error
+        // If the reservation is already "RESERVED", return an error
         throw new BadRequestException('You already reserved this concert');
       }
     } else {

@@ -1,4 +1,7 @@
+import { redirect } from "next/navigation";
+
 const Page = () => {
+  redirect("/admin/home/overview");
   return (
     <div>
       {/* Example page content */}

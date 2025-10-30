@@ -1,4 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, ManyToOne, Column } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  Column,
+  CreateDateColumn,
+} from 'typeorm';
+
 import { User } from 'src/user/user.entity';
 import { Concert } from 'src/concert/concert.entity';
 
@@ -24,4 +31,7 @@ export class Reservation {
     default: ReservationAction.RESERVED,
   })
   action: ReservationAction;
+
+  @CreateDateColumn({ type: 'datetime' })
+  createdAt: Date;
 }

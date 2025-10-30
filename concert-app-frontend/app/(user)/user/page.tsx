@@ -1,48 +1,13 @@
 "use client";
 import { FaUser, FaCheck, FaTimes } from "react-icons/fa";
 import { reserveConcert } from "./actions";
-import { useState } from "react";
+
 import { useConcerts } from "@/context/concert";
 
 const Page = () => {
+  const { concerts } = useConcerts();
   const userId = 10000;
 
-  const { concerts } = useConcerts();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const handleReserve = async (concertId: number, action: string) => {
-    try {
-      setLoading(true);
-      setError("");
-
-      // Send a POST request to the server-side endpoint
-      const response = await fetch("/api/reserve", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userId,
-          concertId,
-          action,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Something went wrong");
-      }
-
-      // Handle success (e.g., show a success message or update UI)
-      console.log("Reservation successful", data);
-    } catch (err) {
-      // Handle error (e.g., show error message to user)
-      setError("Failed to reserve concert: " + err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
   const checkIfReserved = (reservations: Array<any>) => {
     return reservations.some(
       (reservation) => reservation.action === "reserved",
@@ -69,20 +34,25 @@ const Page = () => {
                 <span>{seats}</span>
               </div>
               <div className="flex space-x-2">
-                <button
-                  type="button"
-                  className="px-3 py-1 rounded text-sm flex items-center text-white bg-green-500 hover:bg-green-600"
-                  onClick={() =>
-                    handleReserve(id, isReserved ? "canceled" : "reserved")
-                  }
-                  disabled={loading}
-                >
-                  {loading
-                    ? "Processing..."
-                    : isReserved
-                      ? "Cancel Reservation"
-                      : "Reserve"}
-                </button>
+                {isReserved ? (
+                  <form action={() => reserveConcert(userId, id, "canceled")}>
+                    <button
+                      type="submit"
+                      className="px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600 flex items-center"
+                    >
+                      Cancel
+                    </button>
+                  </form>
+                ) : (
+                  <form action={() => reserveConcert(userId, id, "reserved")}>
+                    <button
+                      type="submit"
+                      className="px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600 flex items-center"
+                    >
+                      Reserve
+                    </button>
+                  </form>
+                )}
               </div>
             </div>
           </div>
