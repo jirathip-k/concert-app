@@ -1,4 +1,8 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, IsNull } from 'typeorm';
 import { Concert } from '@/concert/concert.entity';
@@ -24,8 +28,9 @@ export class ConcertService {
 
   async delete(id: number) {
     const concert = await this.concertRepo.findOne({ where: { id } });
+
     if (!concert) {
-      throw new Error('Concert not found');
+      throw new NotFoundException('Concert not found');
     }
     if (concert.deletedAt) {
       throw new BadRequestException('Concert has already been deleted');

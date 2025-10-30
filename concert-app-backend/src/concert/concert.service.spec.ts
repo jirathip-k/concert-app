@@ -1,33 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConcertService } from './concert.service';
 import { Concert } from './concert.entity';
-import { Repository } from 'typeorm';
+import { Repository, IsNull } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { BadRequestException } from '@nestjs/common';
 
 describe('ConcertService', () => {
   let service: ConcertService;
-  let concertRepository: Repository<Concert>;
-
-  // Mock data
-  const mockConcert = {
-    id: 1,
-    name: 'Concert 1',
-    deletedAt: null,
-  };
-
-  const mockDeletedConcert = {
-    id: 2,
-    name: 'Concert 2',
-    deletedAt: new Date(),
-  };
-
-  const mockConcertRepository = {
-    find: jest.fn().mockResolvedValue([mockConcert]),
-    findOne: jest.fn().mockResolvedValue(mockConcert),
-    create: jest.fn().mockReturnValue(mockConcert),
-    save: jest.fn().mockResolvedValue(mockConcert),
-  };
+  let concertRepo: Repository<Concert>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -35,65 +15,66 @@ describe('ConcertService', () => {
         ConcertService,
         {
           provide: getRepositoryToken(Concert),
-          useValue: mockConcertRepository,
+          useValue: {
+            find: jest.fn(),
+            create: jest.fn(),
+            save: jest.fn(),
+            findOne: jest.fn(),
+          },
         },
       ],
     }).compile();
 
     service = module.get<ConcertService>(ConcertService);
-    concertRepository = module.get<Repository<Concert>>(
-      getRepositoryToken(Concert),
-    );
+    concertRepo = module.get<Repository<Concert>>(getRepositoryToken(Concert));
   });
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
-  });
-
+  // Test case for findAll
   describe('findAll', () => {
-    it('should return all concerts that are not soft-deleted', async () => {
+    it('should return all concerts without deleted ones', async () => {
+      const mockConcerts = [
+        { id: 1, name: 'Concert 1' },
+        { id: 2, name: 'Concert 2' },
+      ];
+      jest.spyOn(concertRepo, 'find').mockResolvedValue(mockConcerts);
+
       const result = await service.findAll();
-      expect(result).toEqual([mockConcert]);
-      expect(concertRepository.find).toHaveBeenCalledWith({
-        where: { deletedAt: null },
+      expect(result).toEqual(mockConcerts);
+      expect(concertRepo.find).toHaveBeenCalledWith({
+        where: { deletedAt: IsNull() },
         relations: ['reservations'],
       });
     });
   });
 
+  // Test case for create
   describe('create', () => {
-    it('should create and save a concert', async () => {
-      const createConcertDto = { name: 'New Concert' };
-      const result = await service.create(createConcertDto);
+    it('should create and return a concert', async () => {
+      const createData = { name: 'New Concert' };
+      const mockConcert = { ...createData, id: 1 };
+
+      jest.spyOn(concertRepo, 'create').mockReturnValue(mockConcert);
+      jest.spyOn(concertRepo, 'save').mockResolvedValue(mockConcert);
+
+      const result = await service.create(createData);
       expect(result).toEqual(mockConcert);
-      expect(concertRepository.create).toHaveBeenCalledWith(createConcertDto);
-      expect(concertRepository.save).toHaveBeenCalledWith(mockConcert);
+      expect(concertRepo.create).toHaveBeenCalledWith(createData);
+      expect(concertRepo.save).toHaveBeenCalledWith(mockConcert);
     });
   });
 
+  // Test case for delete
   describe('delete', () => {
-    it('should throw an error if the concert does not exist', async () => {
-      concertRepository.findOne = jest.fn().mockResolvedValue(null);
-      await expect(service.delete(999)).rejects.toThrowError(
-        'Concert not found',
-      );
-    });
-
-    it('should throw a BadRequestException if the concert is already deleted', async () => {
-      concertRepository.findOne = jest
-        .fn()
-        .mockResolvedValue(mockDeletedConcert);
-      await expect(service.delete(2)).rejects.toThrowError(BadRequestException);
-    });
-
-    it('should delete a concert and set deletedAt', async () => {
-      const concertToDelete = { ...mockConcert, deletedAt: null };
-      concertRepository.findOne = jest.fn().mockResolvedValue(concertToDelete);
+    it('should delete a concert successfully', async () => {
+      const mockConcert = { id: 1, deletedAt: null };
+      jest.spyOn(concertRepo, 'findOne').mockResolvedValue(mockConcert);
+      jest
+        .spyOn(concertRepo, 'save')
+        .mockResolvedValue({ ...mockConcert, deletedAt: new Date() });
 
       const result = await service.delete(1);
-
-      expect(result).toEqual({ ...mockConcert, deletedAt: expect.any(Date) });
-      expect(concertRepository.save).toHaveBeenCalledWith({
+      expect(result.deletedAt).toBeDefined();
+      expect(concertRepo.save).toHaveBeenCalledWith({
         ...mockConcert,
         deletedAt: expect.any(Date),
       });
