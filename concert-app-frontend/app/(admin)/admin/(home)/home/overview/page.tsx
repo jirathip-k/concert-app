@@ -1,6 +1,7 @@
 "use client";
 
 import { FaUser, FaTrash } from "react-icons/fa";
+import { RiDeleteBin6Line } from "react-icons/ri";
 import { useConcerts } from "@/context/concert";
 import { useState } from "react";
 import { deleteConcert } from "./actions";
@@ -70,7 +71,9 @@ const Page = () => {
               onClick={() => openConfirmationModal(id)}
               className="px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600 flex items-center"
             >
-              Cancel
+              <RiDeleteBin6Line className="mr-2" />
+
+              <span> Delete</span>
             </button>
           </div>
         </div>
