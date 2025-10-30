@@ -2,12 +2,55 @@
 
 import { FaUser, FaTrash } from "react-icons/fa";
 import { useConcerts } from "@/context/concert";
+import { useState } from "react";
 import { deleteConcert } from "./actions";
+import { Notification } from "@/components/notification";
+import { ConfirmationModal } from "@/components/confirmation-modal";
 
 const Page = () => {
   const { concerts } = useConcerts();
+  const [notification, setNotification] = useState<{
+    message: string;
+    type: "success" | "error";
+  } | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [concertIdToActOn, setConcertIdToActOn] = useState<number | null>(null);
+
+  const checkIfReserved = (reservations: Array<any>) => {
+    return reservations.some(
+      (reservation) => reservation.action === "reserved",
+    );
+  };
+  // Handle reservation action
+  const handleDelete = async (concertId: number) => {
+    try {
+      await deleteConcert(concertId);
+      setNotification({
+        message: "Delete successfully",
+        type: "success",
+      });
+      setIsModalOpen(false); // Close the modal after action
+    } catch (error) {
+      setNotification({
+        message: "Something went wrong!",
+        type: "error",
+      });
+      setIsModalOpen(false); // Close the modal in case of an error
+    }
+  };
+
+  // Open confirmation modal
+  const openConfirmationModal = (concertId: number) => {
+    setConcertIdToActOn(concertId);
+    setIsModalOpen(true);
+  };
+
   return (
     <div className="w-full">
+      {notification && (
+        <Notification message={notification.message} type={notification.type} />
+      )}
+
       {concerts.map(({ id, name, description, seats }) => (
         <div
           key={id}
@@ -23,17 +66,26 @@ const Page = () => {
               <FaUser className="mr-1" />
               <span>{seats}</span>
             </div>
-            <form action={() => deleteConcert(id)}>
-              <button
-                type="submit"
-                className="px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600 flex items-center"
-              >
-                <FaTrash className="mr-2" /> Delete
-              </button>
-            </form>
+            <button
+              onClick={() => openConfirmationModal(id)}
+              className="px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600 flex items-center"
+            >
+              Cancel
+            </button>
           </div>
         </div>
       ))}
+      <ConfirmationModal
+        isOpen={isModalOpen}
+        action="delete"
+        onConfirm={() => {
+          if (concertIdToActOn) {
+            handleDelete(concertIdToActOn);
+          }
+        }}
+        onCancel={() => setIsModalOpen(false)}
+        type="error"
+      />
     </div>
   );
 };
