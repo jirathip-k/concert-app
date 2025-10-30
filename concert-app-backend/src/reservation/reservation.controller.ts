@@ -1,7 +1,7 @@
 import { Controller, Post, Body, Param, Get } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
-import { ReservationService } from './reservation.service';
-import { ReservationAction } from './reservation.entity';
+import { ReservationService } from '@/reservation/reservation.service';
+import { ReservationAction } from '@/reservation/reservation.entity';
 
 @ApiTags('Reservations')
 @Controller('reservations')

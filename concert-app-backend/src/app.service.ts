@@ -1,5 +1,5 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
-import { UserSeederService } from './user/user-seeder.service';
+import { UserSeederService } from '@/user/user-seeder.service';
 
 @Injectable()
 export class AppService implements OnModuleInit {

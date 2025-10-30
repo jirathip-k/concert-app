@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Concert } from './concert.entity';
-import { ConcertService } from './concert.service';
-import { ConcertController } from './concert.controller';
+import { Concert } from '@/concert/concert.entity';
+import { ConcertService } from '@/concert/concert.service';
+import { ConcertController } from '@/concert/concert.controller';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Concert])],

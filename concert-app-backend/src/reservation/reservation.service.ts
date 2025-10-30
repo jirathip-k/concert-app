@@ -1,9 +1,12 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Reservation, ReservationAction } from './reservation.entity';
-import { Concert } from 'src/concert/concert.entity';
-import { User } from 'src/user/user.entity';
+import {
+  Reservation,
+  ReservationAction,
+} from '@/reservation/reservation.entity';
+import { Concert } from '@/concert/concert.entity';
+import { User } from '@/user/user.entity';
 
 @Injectable()
 export class ReservationService {

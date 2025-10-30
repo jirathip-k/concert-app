@@ -1,7 +1,7 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, IsNull } from 'typeorm';
-import { Concert } from './concert.entity';
+import { Concert } from '@/concert/concert.entity';
 
 @Injectable()
 export class ConcertService {

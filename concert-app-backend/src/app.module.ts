@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
-import { UserModule } from './user/user.module';
-import { ConcertModule } from './concert/concert.module';
-import { ReservationModule } from './reservation/reservation.module';
+import { UserModule } from '@/user/user.module';
+import { ConcertModule } from '@/concert/concert.module';
+import { ReservationModule } from '@/reservation/reservation.module';
 
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Concert } from './concert/concert.entity';
-import { User } from './user/user.entity';
-import { Reservation } from './reservation/reservation.entity';
-import { AppService } from './app.service';
+import { Concert } from '@/concert/concert.entity';
+import { User } from '@/user/user.entity';
+import { Reservation } from '@/reservation/reservation.entity';
+import { AppService } from '@/app.service';
 
 @Module({
   imports: [

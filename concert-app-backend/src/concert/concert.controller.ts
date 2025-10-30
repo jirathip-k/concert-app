@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Delete, Param } from '@nestjs/common';
-import { ConcertService } from './concert.service';
-import { CreateConcertDto } from './concert.dto';
+import { ConcertService } from '@/concert/concert.service';
+import { CreateConcertDto } from '@/concert/concert.dto';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 @ApiTags('Concerts')

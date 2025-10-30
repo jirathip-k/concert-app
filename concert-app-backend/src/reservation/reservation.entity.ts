@@ -6,8 +6,8 @@ import {
   CreateDateColumn,
 } from 'typeorm';
 
-import { User } from 'src/user/user.entity';
-import { Concert } from 'src/concert/concert.entity';
+import { User } from '@/user/user.entity';
+import { Concert } from '@/concert/concert.entity';
 
 export enum ReservationAction {
   RESERVED = 'reserved',
