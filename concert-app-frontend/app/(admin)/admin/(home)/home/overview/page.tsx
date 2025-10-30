@@ -1,25 +1,18 @@
+"use client";
+
 import { FaUser, FaTrash } from "react-icons/fa";
-const sampleConcerts = [
-  {
-    id: 1,
-    name: "Concert Name 1",
-    description:
-      "Lorem ipsum dolor sit amet consectetur. Elit purus nam gravida porttitor nibh urna sit ornare a. Proin dolor morbi id ornare aenean non. Fusce dignissim turpis sed non est orci sed in.",
-    seats: 500,
-  },
-  {
-    id: 2,
-    name: "Concert Name 2",
-    description:
-      "Lorem ipsum dolor sit amet consectetur. Elit purus nam gravida porttitor nibh urna sit ornare a. Proin dolor morbi id ornare aenean non. Fusce dignissim turpis sed non est orci sed in.",
-    seats: 200,
-  },
-];
+import { useConcerts } from "@/context/concert";
+import { deleteConcert } from "./actions";
+
 const Page = () => {
+  const { concerts } = useConcerts();
   return (
     <div className="w-full">
-      {sampleConcerts.map(({ id, name, description, seats }) => (
-        <div key={id} className="border rounded-md p-4 mb-4 shadow-sm bg-white">
+      {concerts.map(({ id, name, description, seats }) => (
+        <div
+          key={id}
+          className="border border-gray-100  rounded-md p-4 mb-4 shadow-sm bg-white"
+        >
           <h3 className="text-blue-600 font-semibold mb-2 cursor-pointer hover:underline">
             {name}
           </h3>
@@ -30,13 +23,14 @@ const Page = () => {
               <FaUser className="mr-1" />
               <span>{seats}</span>
             </div>
-
-            <button
-              type="button"
-              className="px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600 flex items-center"
-            >
-              <FaTrash className="mr-2" /> Delete
-            </button>
+            <form action={() => deleteConcert(id)}>
+              <button
+                type="submit"
+                className="px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600 flex items-center"
+              >
+                <FaTrash className="mr-2" /> Delete
+              </button>
+            </form>
           </div>
         </div>
       ))}

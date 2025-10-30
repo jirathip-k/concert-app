@@ -17,4 +17,7 @@ export class Concert {
 
   @OneToMany(() => Reservation, (res) => res.concert)
   reservations: Reservation[];
+
+  @Column({ type: 'datetime', nullable: true })
+  deletedAt: Date | null;
 }
